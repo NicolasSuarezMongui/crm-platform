@@ -1,0 +1,62 @@
+# --- Entornos Virtuales y Python ---
+.venv/
+venv/
+ENV/
+env/
+bin/
+lib/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Frontend (Node.js / Angular / Astro) ---
+node_modules/
+dist/
+tmp/
+out/
+.next/
+.astro/
+.vercel/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- Configuración y Secretos (CRÍTICO) ---
+.env
+.env.*
+!.env.example
+secrets.json
+*.pem
+*.key
+
+# --- Editores y Sistema (Fedora/Linux/Neovim) ---
+.nvim.lua
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Bases de Datos y Logs ---
+*.log
+*.sqlite3
+.data/
