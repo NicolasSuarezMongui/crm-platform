@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+/* Dark mode via clase en el html root */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Fuente — IBM Plex Mono para el carácter técnico del CRM */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+@layer base {
+  html {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Scrollbar minimalista */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+  }
+
+  /* Transición suave al cambiar de tema */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  /* Excepciones - elementos que no deben transicionar colores */
+  button,
+  a,
+  input,
+  svg * {
+    transition-property: background-color, border-color, color, opacity, transform, box-shadow;
+  }
+}
