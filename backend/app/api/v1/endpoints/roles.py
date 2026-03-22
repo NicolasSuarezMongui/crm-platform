@@ -17,7 +17,7 @@ def get_role_service(db: Annotated[AsyncSession, Depends(get_db)]) -> RoleServic
 
 
 @router.get(
-    "/",
+    "",
     response_model=list[RoleResponse],
     dependencies=[RequirePermission("users", "read")],
 )
@@ -44,7 +44,7 @@ async def get_role(
 
 
 @router.post(
-    "/",
+    "",
     response_model=RoleResponse,
     status_code=status.HTTP_201_CREATED,
     dependencies=[RequirePermission("settings", "write")],

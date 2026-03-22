@@ -23,7 +23,8 @@ app = FastAPI(
     redoc_url=None,
     openapi_url="/api/openapi.json" if settings.DEBUG else None,
     default_response_class=ORJSONResponse,
-    lifespan=lifespan
+    lifespan=lifespan,
+    redirect_slashes=False
 )
 
 # --- Middleware -------------------------------------------------------

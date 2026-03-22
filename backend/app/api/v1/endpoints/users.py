@@ -24,7 +24,7 @@ def get_user_service(db: Annotated[AsyncSession, Depends(get_db)]) -> UserServic
     return UserService(db)
 
 
-@router.get("/", response_model=PaginatedResponse[UserSummary])
+@router.get("", response_model=PaginatedResponse[UserSummary])
 async def list_users(
     current_user: CurrentUser,
     service: Annotated[UserService, Depends(get_user_service)],
@@ -54,12 +54,13 @@ async def get_user(
     _=RequirePermission("users", "read"),
 ):
     user = await service.get_user(user_id)
-    print(f"[DEBUG] User Data: {user.__dict__}")  # Debug print to check user data
+    # Debug print to check user data
+    print(f"[DEBUG] User Data: {user.__dict__}")
     return user
 
 
 @router.post(
-    "/",
+    "",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
     dependencies=[RequirePermission("users", "write")],
