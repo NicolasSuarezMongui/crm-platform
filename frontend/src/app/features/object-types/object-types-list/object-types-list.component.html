@@ -1,0 +1,127 @@
+<div class="p-6 lg:p-8 space-y-6">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <p
+        class="text-xs font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1"
+      >
+        Configuración
+      </p>
+      <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight">
+        Tipos de objeto
+      </h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+        Define la estructura de los datos de tu CRM
+      </p>
+    </div>
+    @if (auth.hasPermission('object_types', 'manage')) {
+      <a
+        routerLink="/object-types/new"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-sm shrink-0"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Nuevo tipo
+      </a>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-16">
+      <svg
+        class="animate-spin text-indigo-500"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+      </svg>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (ot of objectTypes(); track ot.id) {
+        <div
+          class="group rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800/50 p-5 space-y-4 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shrink-0"
+                [style.background]="ot.color || '#6366f1'"
+              >
+                {{ ot.label[0] }}
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-semibold text-slate-900 dark:text-slate-50">
+                    {{ ot.label_plural }}
+                  </h3>
+                  @if (ot.is_system) {
+                    <span
+                      class="text-xs font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
+                      >sistema</span
+                    >
+                  }
+                </div>
+                <p class="text-xs font-mono text-slate-400 dark:text-slate-500">
+                  {{ ot.api_name }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <a
+              [routerLink]="['/records', ot.api_name]"
+              class="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              </svg>
+              Ver registros
+            </a>
+            @if (auth.hasPermission('object_types', 'manage')) {
+              <a
+                [routerLink]="['/object-types', ot.id, 'edit']"
+                class="flex items-center justify-center w-8 h-8 rounded-lg text-xs border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

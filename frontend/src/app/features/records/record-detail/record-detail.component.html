@@ -1,0 +1,187 @@
+<div class="p-6 lg:p-8 max-w-2xl space-y-6">
+  <!-- Back + header -->
+  <div class="flex items-center gap-3">
+    <a
+      [routerLink]="['/records', objectType()?.api_name]"
+      class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <path d="M19 12H5M12 5l-7 7 7 7" />
+      </svg>
+    </a>
+    <div>
+      <p class="text-xs font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500">
+        {{ objectType()?.label_plural ?? 'Registros' }} / Detalle
+      </p>
+      <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-50 tracking-tight">
+        {{ record()?.name ?? 'Cargando...' }}
+      </h1>
+    </div>
+
+    @if (auth.hasPermission('contacts', 'delete') && record()) {
+      <button
+        (click)="confirmDelete()"
+        class="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border border-red-200 dark:border-red-800/50 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path
+            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"
+          />
+        </svg>
+        Eliminar
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-20">
+      <svg
+        class="animate-spin text-indigo-500"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+      </svg>
+    </div>
+  } @else if (record(); as rec) {
+    <!-- Meta bar -->
+    <div
+      class="grid grid-cols-2 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800/50 divide-x divide-slate-100 dark:divide-slate-700/50"
+    >
+      <div class="p-4">
+        <p class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Creado</p>
+        <p class="text-sm font-mono text-slate-700 dark:text-slate-300">
+          {{ formatDate(rec.created_at) }}
+        </p>
+      </div>
+      <div class="p-4">
+        <p class="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">Actualizado</p>
+        <p class="text-sm font-mono text-slate-700 dark:text-slate-300">
+          {{ formatDate(rec.updated_at) }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Fields form -->
+    @if (auth.hasPermission('contacts', 'write')) {
+      <div
+        class="rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800/50 p-5 space-y-5"
+      >
+        <h2 class="text-xs font-mono uppercase tracking-wider text-slate-400">Información</h2>
+
+        <!-- Name -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+            Nombre <span class="text-red-400 text-xs">*</span>
+          </label>
+          <input
+            type="text"
+            [value]="editName()"
+            (input)="editName.set($any($event.target).value)"
+            class="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          />
+        </div>
+
+        <!-- Dynamic fields -->
+        @for (field of objectType()?.field_definitions ?? []; track field.id) {
+          <app-field-input
+            [field]="field"
+            [value]="editData()[field.api_name]"
+            [error]="fieldErrors()[field.api_name] ?? null"
+            (valueChange)="updateField(field.api_name, $event)"
+          />
+        }
+
+        @if (saveError()) {
+          <p class="text-red-500 text-sm">{{ saveError() }}</p>
+        }
+        @if (saveSuccess()) {
+          <p class="text-emerald-600 dark:text-emerald-400 text-sm font-mono">
+            ✓ Cambios guardados
+          </p>
+        }
+
+        <div class="flex justify-end">
+          <button
+            (click)="save()"
+            [disabled]="saving()"
+            class="px-5 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 transition-colors"
+          >
+            {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </div>
+    } @else {
+      <!-- Read-only view -->
+      <div
+        class="rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800/50 divide-y divide-slate-100 dark:divide-slate-700/50"
+      >
+        @for (field of objectType()?.field_definitions ?? []; track field.id) {
+          <div class="px-5 py-3.5 flex items-start justify-between gap-4">
+            <span class="text-xs font-mono text-slate-400 dark:text-slate-500 pt-0.5 w-36 shrink-0">
+              {{ field.label }}
+            </span>
+            <span class="text-sm text-slate-700 dark:text-slate-300 flex-1 text-right">
+              {{ rec.data[field.api_name] ?? '—' }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<!-- Delete confirm -->
+@if (showDeleteConfirm()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background: rgba(0, 0, 0, 0.5)"
+  >
+    <div
+      class="w-full max-w-sm rounded-xl p-6 space-y-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+    >
+      <h3 class="font-semibold text-slate-900 dark:text-slate-50">Eliminar registro</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400">
+        ¿Confirmas que quieres eliminar
+        <span class="font-medium text-slate-700 dark:text-slate-300">{{ record()?.name }}</span
+        >? Esta acción no se puede deshacer.
+      </p>
+      <div class="flex justify-end gap-3">
+        <button
+          (click)="showDeleteConfirm.set(false)"
+          class="px-4 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="deleteRecord()"
+          [disabled]="deleting()"
+          class="px-4 py-2 text-sm rounded-lg font-medium bg-red-600 hover:bg-red-500 text-white disabled:opacity-50 transition-colors"
+        >
+          {{ deleting() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
