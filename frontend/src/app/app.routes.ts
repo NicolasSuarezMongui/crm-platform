@@ -17,7 +17,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
-      // --- IAM -----------------------------------------------------------
+      // ─── IAM ──────────────────────────────────────────────
       {
         path: 'users',
         canActivate: [permissionGuard('users', 'read')],
@@ -53,6 +53,48 @@ export const routes: Routes = [
         canActivate: [permissionGuard('settings', 'write')],
         loadComponent: () =>
           import('./features/roles/role-form/role-form.component').then((m) => m.RoleFormComponent),
+      },
+      // ─── Object types ─────────────────────────────────────
+      {
+        path: 'object-types',
+        canActivate: [permissionGuard('contacts', 'read')],
+        loadComponent: () =>
+          import('./features/object-types/object-types-list/object-types-list.component').then(
+            (m) => m.ObjectTypesListComponent,
+          ),
+      },
+      {
+        path: 'object-types/new',
+        canActivate: [permissionGuard('object_types', 'manage')],
+        loadComponent: () =>
+          import('./features/object-types/object-type-form/object-type-form.component').then(
+            (m) => m.ObjectTypeFormComponent,
+          ),
+      },
+      {
+        path: 'object-types/:id/edit',
+        canActivate: [permissionGuard('object_types', 'manage')],
+        loadComponent: () =>
+          import('./features/object-types/object-type-form/object-type-form.component').then(
+            (m) => m.ObjectTypeFormComponent,
+          ),
+      },
+      // ─── Records (genérico) ───────────────────────────────
+      {
+        path: 'records/:objectType',
+        canActivate: [permissionGuard('contacts', 'read')],
+        loadComponent: () =>
+          import('./features/records/records-list/records-list.component').then(
+            (m) => m.RecordsListComponent,
+          ),
+      },
+      {
+        path: 'records/:id/detail',
+        canActivate: [permissionGuard('contacts', 'read')],
+        loadComponent: () =>
+          import('./features/records/record-detail/record-detail.component').then(
+            (m) => m.RecordDetailComponent,
+          ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
